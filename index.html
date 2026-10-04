@@ -19,10 +19,16 @@
 .chapter-wrap{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.chapter-choice{position:relative}.chapter-choice input{position:absolute;opacity:0;pointer-events:none}.chapter-choice span{display:inline-grid;place-items:center;min-width:38px;height:36px;padding:0 10px;border:1px solid #d8dee7;border-radius:9px;background:#fff;color:#4d5c70;font-weight:750;cursor:pointer}.chapter-choice input:checked+span{background:var(--navy);border-color:var(--navy);color:#fff}
 .chapter-actions{display:flex;gap:6px;margin-top:10px}.mini-btn{border:0;background:#eef2f6;color:var(--navy);border-radius:8px;padding:6px 8px;font-size:.72rem;font-weight:800;cursor:pointer}.book-card.locked .book-head{cursor:default}
 @media(max-width:680px){.book-grid{grid-template-columns:1fr}.book-card{padding:11px}.chapter-choice span{min-width:42px;height:40px}}@media(max-width:680px){header{padding:18px 14px 40px}.brand{gap:11px}.brand-logos{gap:5px}.brand-logo{height:38px;width:38px;border-radius:9px;padding:4px}.brand-logo.pbe{width:58px}.brand h1{font-size:1.28rem}.brand p{font-size:.76rem;line-height:1.3}.brand-logo.sda{display:none}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{border-radius:16px}.quiz-top{align-items:center}.stats{grid-template-columns:repeat(2,1fr)}.actions{flex-direction:column}.actions .btn{width:100%}}
+
+/* Oxford Academics quiz/navigation revision */
+.brand{justify-content:center;position:relative}.brand-copy{text-align:center;flex:1}.brand-side{display:flex;align-items:center;justify-content:center;min-width:100px}.brand-side .brand-logo{height:64px;width:64px}.brand-side .brand-logo.pbe{width:108px}.brand-subtitle{margin-top:5px}.brand-year{display:block;color:#c9a34e;font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+.quiz-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.question-count{text-align:right;color:var(--navy);font-weight:850;font-size:.95rem}.quiz-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px}.timer-inline{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-weight:800;font-size:.86rem}.timer-inline.late{color:var(--red)}
+.score-options{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.score-option{min-width:52px;border:1px solid #d8dee7;background:#fff;color:var(--navy);border-radius:999px;padding:9px 14px;font-weight:850;cursor:pointer}.score-option:hover{border-color:var(--gold);background:#fbf7ed}.score-option.selected{background:var(--navy);border-color:var(--navy);color:#fff}.quiz-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.quiz-nav .btn{min-width:135px}.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}.footer{display:flex;flex-direction:column;align-items:center;gap:7px;padding:24px 12px}.footer-logo{height:44px;max-width:150px;object-fit:contain}.footer strong{color:var(--navy)}
+@media(max-width:680px){.brand{gap:8px}.brand-side{min-width:58px}.brand-side .brand-logo{display:block;height:44px;width:44px}.brand-side .brand-logo.pbe{width:64px}.brand h1{font-size:1.18rem}.brand p{font-size:.72rem}.brand-year{font-size:.66rem}.quiz-heading{gap:8px}.question-count{font-size:.86rem}.quiz-nav .btn{min-width:0;flex:1}.footer-logo{height:38px}}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="brand-logos" aria-label="Pathfinder Bible Experience and church identity"><img class="brand-logo pbe" src="oxford_pbe_assets/pbe-logo.jpg" alt="Pathfinder Bible Experience"><img class="brand-logo" src="oxford_pbe_assets/pathfinder-logo.png" alt="Pathfinder Club"><img class="brand-logo sda" src="oxford_pbe_assets/sda-blue.png" alt="Seventh-day Adventist Church"></div><div class="brand-copy"><h1>Oxford Academics</h1><p>Pathfinder Bible Experience · 2026/27 Training Platform</p></div></div></header>
+<header><div class="brand" aria-label="Oxford Academics Pathfinder Bible Experience"><div class="brand-side"><img class="brand-logo pbe" src="oxford_pbe_assets/pbe-logo.jpg" alt="Pathfinder Bible Experience"></div><div class="brand-copy"><h1>Oxford Academics</h1><p class="brand-subtitle">Pathfinder Bible Experience</p><span class="brand-year">2026/27 Training</span></div><div class="brand-side"><img class="brand-logo" src="oxford_pbe_assets/pathfinder-logo.png" alt="Pathfinder Club"></div></div></header>
 <main class="shell">
 <section id="config" class="card">
 <div class="eyebrow">Training Centre</div><h2 class="section-title">Prepare with purpose.</h2><p class="sub" id="configSub">Choose a Pathfinder, training mode and study area. Your results are recorded for progress tracking.</p>
@@ -41,23 +47,24 @@
 </section>
 
 <section id="quiz" class="card hidden">
-<div class="quiz-top"><div><div id="ref" class="ref"></div><div id="chips" class="chips"></div></div><div id="timer" class="timer">25</div></div>
+<div class="quiz-heading"><div><div id="ref" class="ref"></div><div id="chips" class="chips"></div></div><div><div id="questionCount" class="question-count">Question 1 of 1</div><div class="quiz-meta"><span id="timer" class="timer-inline">⏱ 25s</span></div></div></div>
 <div class="progressbar"><div id="bar"></div></div><div id="progress" class="hint"></div>
+<div id="assignedPlayer" class="assigned-player hidden"><span>Assigned Pathfinder</span><strong id="assignedPlayerName"></strong></div>
 <div id="qtext" class="question"></div>
 <div id="typedWrap" class="typed hidden"><label for="userInput">Your answer before revealing</label><input id="userInput" autocomplete="off" placeholder="Type your answer…"></div>
 <div id="answer" class="answer hidden"></div>
 <div id="preActions" class="actions"><button id="showAnswer" class="btn btn-primary">Show Answer</button><button id="skipBtn" class="btn btn-ghost">Skip</button></div>
-<div id="scoreArea" class="hidden"><label>Compare your answer with the official answer. How many marks did you earn?</label><div id="scoreButtons" class="score-grid"></div></div>
+<div id="scoreArea" class="hidden"><label>Compare your answer with the official answer. Select your score:</label><div id="scoreButtons" class="score-options"></div><div class="quiz-nav"><button id="prevBtn" class="btn btn-ghost">← Previous</button><button id="nextBtn" class="btn btn-gold" disabled>Next Question →</button></div></div>
 </section>
 
 <section id="summary" class="card hidden">
 <div class="eyebrow">Training Complete</div><h2 class="section-title" id="summaryTitle">Well done.</h2>
 <div class="summary-score"><div id="scoreRing" class="score-ring" style="--pct:0%"><span id="percent">0%</span></div><div><strong id="marksLine">0 / 0 marks</strong></div></div>
 <div class="stats"><div class="stat"><strong id="fullCorrect">0</strong><span>Fully correct</span></div><div class="stat"><strong id="partial">0</strong><span>Partial</span></div><div class="stat"><strong id="incorrect">0</strong><span>Incorrect</span></div><div class="stat"><strong id="skipped">0</strong><span>Skipped</span></div></div>
-<div id="saveStatus" class="status">Saving result…</div><div class="actions"><button id="againBtn" class="btn btn-primary">Start Another Quiz</button><button id="retryBtn" class="btn btn-gold">Practice Missed Questions</button></div>
+<div id="coachPlayerResults" class="player-results hidden"></div><div id="saveStatus" class="status">Saving result…</div><div class="actions"><button id="againBtn" class="btn btn-primary">Start Another Quiz</button><button id="retryBtn" class="btn btn-gold">Practice Missed Questions</button></div>
 </section>
 </main>
-<div class="footer">Oxford Academics Pathfinder Club · Developed by Phil Mudzamba</div>
+<div class="footer"><img class="footer-logo" src="oxford_pbe_assets/sda-blue.png" alt="Seventh-day Adventist Church"><strong>Oxford Academics Pathfinder Club</strong><span>Pathfinder Bible Experience · 2026/27</span></div>
 <script>
 // IMPORTANT: Replace this with the URL of the NEW backend deployment after redeploying Apps Script.
 // LIVE BACKEND — update this one value if the Apps Script deployment URL ever changes.
@@ -78,7 +85,7 @@ const PLAYERS=[
  {name:"Coach / Group Session",group:"Coaching",role:"Coach",assignments:{}}
 ];
 
-let bankInfo={},quizQuestions=[],currentIdx=0,questionLogs=[],quizStart=0,currentStart=0,timer=null,timeLeft=25,currentRevealedAt=0,lastMissed=[];
+let bankInfo={},quizQuestions=[],currentIdx=0,questionLogs=[],quizStart=0,currentStart=0,timer=null,timeLeft=25,currentRevealedAt=0,lastMissed=[],pendingScore=null;
 const $=id=>document.getElementById(id);
 function escapeHTML(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function player(){return PLAYERS.find(p=>p.name===$('userName').value);}
@@ -166,37 +173,41 @@ async function startQuiz(){
 $('startBtn').addEventListener('click',startQuiz);
 
 function showQuestion(){
- clearInterval(timer);const q=quizQuestions[currentIdx],max=Number(q.maxMarks)||1;currentStart=Date.now();currentRevealedAt=0;
+ clearInterval(timer);const q=quizQuestions[currentIdx],max=Number(q.maxMarks)||1;currentStart=Date.now();currentRevealedAt=0;pendingScore=null;
  $('ref').textContent=`${q.book} ${q.chapter}:${q.verse}`;$('qtext').textContent=q.question;
  const owner=ownerForQuestion(q);$('assignedPlayerName').textContent=owner;$('assignedPlayer').classList.toggle('hidden',!isCoach());$('chips').innerHTML=`<span class="chip">${escapeHTML(q.difficulty||'Unrated')}</span><span class="chip">${escapeHTML(q.type||'Question')}</span><span class="chip gold">${max} mark${max===1?'':'s'}</span>`;
- $('progress').textContent=`Question ${currentIdx+1} of ${quizQuestions.length}`;$('bar').style.width=`${((currentIdx+1)/quizQuestions.length)*100}%`;
+ $('questionCount').textContent=`Question ${currentIdx+1} of ${quizQuestions.length}`;$('progress').textContent=`${quizQuestions.length-currentIdx-1} question${quizQuestions.length-currentIdx-1===1?'':'s'} remaining`;$('bar').style.width=`${((currentIdx+1)/quizQuestions.length)*100}%`;
  $('answer').classList.add('hidden');$('answer').innerHTML='';$('scoreArea').classList.add('hidden');$('preActions').classList.remove('hidden');$('userInput').value='';$('typedWrap').classList.toggle('hidden',isCoach()||max<3);
- timeLeft=25;$('timer').textContent=timeLeft;$('timer').classList.remove('late');timer=setInterval(()=>{timeLeft--;$('timer').textContent=timeLeft;if(timeLeft<=5)$('timer').classList.add('late');if(timeLeft<=0){clearInterval(timer);$('timer').textContent='0'}},1000);
+ $('prevBtn').disabled=currentIdx===0;$('nextBtn').disabled=true;$('nextBtn').textContent=currentIdx===quizQuestions.length-1?'Finish Training →':'Next Question →';
+ timeLeft=25;$('timer').textContent=`⏱ ${timeLeft}s`;$('timer').classList.remove('late');timer=setInterval(()=>{timeLeft--;$('timer').textContent=`⏱ ${Math.max(0,timeLeft)}s`;if(timeLeft<=5)$('timer').classList.add('late');if(timeLeft<=0){clearInterval(timer);$('timer').textContent='⏱ 0s'}},1000);
 }
 function reveal(){
  clearInterval(timer);const q=quizQuestions[currentIdx];currentRevealedAt=Date.now();$('answer').innerHTML=`<strong>Official answer</strong><br>${escapeHTML(q.answer)}`;$('answer').classList.remove('hidden');$('preActions').classList.add('hidden');buildScoreButtons(Number(q.maxMarks)||1);$('scoreArea').classList.remove('hidden');
 }
 $('showAnswer').addEventListener('click',reveal);
-$('skipBtn').addEventListener('click',()=>{clearInterval(timer);recordScore(0,true)});
-function buildScoreButtons(max){const c=$('scoreButtons');c.innerHTML='';for(let i=0;i<=max;i++){const b=document.createElement('button');b.className='score-btn';b.textContent=`${i} / ${max}`;b.onclick=()=>recordScore(i,false);c.appendChild(b)}}
+$('skipBtn').addEventListener('click',()=>{clearInterval(timer);recordScore(0,true);advanceQuestion()});
+function buildScoreButtons(max){const c=$('scoreButtons');c.innerHTML='';for(let i=0;i<=max;i++){const b=document.createElement('button');b.type='button';b.className='score-option';b.textContent=`${i} / ${max}`;b.onclick=()=>{pendingScore=i;[...c.children].forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('nextBtn').disabled=false};c.appendChild(b)}}
 function recordScore(marks,isSkipped){
- const q=quizQuestions[currentIdx],max=Number(q.maxMarks)||1,now=Date.now();questionLogs.push({questionId:q.questionId,book:q.book,chapter:q.chapter,verse:q.verse,type:q.type,difficulty:q.difficulty,assignedPlayer:isCoach()?ownerForQuestion(q):$('userName').value,maxMarks:max,marksAwarded:isSkipped?0:marks,response:$('userInput').value.trim(),answer:q.answer,responseTime:Math.round((now-currentStart)/1000),timeToViewAnswer:currentRevealedAt?Math.round((currentRevealedAt-currentStart)/1000):0,isSkipped});currentIdx++;if(currentIdx<quizQuestions.length)showQuestion();else finishQuiz();
+ const q=quizQuestions[currentIdx],max=Number(q.maxMarks)||1,now=Date.now();questionLogs[currentIdx]={questionId:q.questionId,book:q.book,chapter:q.chapter,verse:q.verse,type:q.type,difficulty:q.difficulty,assignedPlayer:isCoach()?ownerForQuestion(q):$('userName').value,maxMarks:max,marksAwarded:isSkipped?0:marks,response:$('userInput').value.trim(),answer:q.answer,responseTime:Math.round((now-currentStart)/1000),timeToViewAnswer:currentRevealedAt?Math.round((currentRevealedAt-currentStart)/1000):0,isSkipped};
 }
+function advanceQuestion(){if(currentIdx<quizQuestions.length-1){currentIdx++;showQuestion()}else finishQuiz()}
+$('nextBtn').addEventListener('click',()=>{if(pendingScore===null)return;recordScore(pendingScore,false);advanceQuestion()});
+$('prevBtn').addEventListener('click',()=>{if(currentIdx===0)return;currentIdx--;showQuestion()});
 
 async function finishQuiz(){
  clearInterval(timer);$('quiz').classList.add('hidden');$('summary').classList.remove('hidden');
- const max=questionLogs.reduce((s,x)=>s+x.maxMarks,0),earned=questionLogs.reduce((s,x)=>s+x.marksAwarded,0),pct=max?Math.round(earned/max*1000)/10:0,full=questionLogs.filter(x=>!x.isSkipped&&x.marksAwarded===x.maxMarks).length,partial=questionLogs.filter(x=>!x.isSkipped&&x.marksAwarded>0&&x.marksAwarded<x.maxMarks).length,skipped=questionLogs.filter(x=>x.isSkipped).length,incorrect=questionLogs.filter(x=>!x.isSkipped&&x.marksAwarded===0).length;
+ const logs=questionLogs.filter(Boolean),max=logs.reduce((s,x)=>s+x.maxMarks,0),earned=logs.reduce((s,x)=>s+x.marksAwarded,0),pct=max?Math.round(earned/max*1000)/10:0,full=logs.filter(x=>!x.isSkipped&&x.marksAwarded===x.maxMarks).length,partial=logs.filter(x=>!x.isSkipped&&x.marksAwarded>0&&x.marksAwarded<x.maxMarks).length,skipped=logs.filter(x=>x.isSkipped).length,incorrect=logs.filter(x=>!x.isSkipped&&x.marksAwarded===0).length;
  lastMissed=quizQuestions.filter(q=>{const l=questionLogs.find(x=>x.questionId===q.questionId);return l&&l.marksAwarded<l.maxMarks});
  $('summaryTitle').textContent=isCoach()?'Coaching Session Complete':`${$('userName').value} — Training Complete`;
  $('percent').textContent=`${pct}%`;$('scoreRing').style.setProperty('--pct',`${pct}%`);$('marksLine').textContent=`${earned} / ${max} marks`;$('fullCorrect').textContent=full;$('partial').textContent=partial;$('incorrect').textContent=incorrect;$('skipped').textContent=skipped;$('retryBtn').disabled=!lastMissed.length;
 
- const chapters=[...new Set(questionLogs.map(x=>`${x.book} ${x.chapter}`))].join(', '),overall=Math.max(1,Math.round((Date.now()-quizStart)/60000));
+ const chapters=[...new Set(logs.map(x=>`${x.book} ${x.chapter}`))].join(', '),overall=Math.max(1,Math.round((Date.now()-quizStart)/60000));
  const coachBox=$('coachPlayerResults');coachBox.innerHTML='';coachBox.classList.toggle('hidden',!isCoach());
 
  try{
   if(isCoach()){
    const grouped={};
-   questionLogs.forEach(log=>{const who=log.assignedPlayer||'Unassigned';(grouped[who]??=[]).push(log)});
+   logs.forEach(log=>{const who=log.assignedPlayer||'Unassigned';(grouped[who]??=[]).push(log)});
    Object.entries(grouped).forEach(([name,logs])=>{
     const pmax=logs.reduce((s,x)=>s+x.maxMarks,0),pearned=logs.reduce((s,x)=>s+x.marksAwarded,0),ppct=pmax?Math.round(pearned/pmax*1000)/10:0;
     const div=document.createElement('div');div.className='player-result';
@@ -219,7 +230,7 @@ async function finishQuiz(){
     :`Saved ${ok} of ${results.length} player coaching results.`;
    $('saveStatus').classList.toggle('error',ok!==results.length);
   }else{
-   const payload=new URLSearchParams({action:'logQuiz',name:$('userName').value,userRole:'Child',sessionType:'Individual',trainingMode:$('mode').value,chapters,overallTime:overall,questionLogs:JSON.stringify(questionLogs)});
+   const payload=new URLSearchParams({action:'logQuiz',name:$('userName').value,userRole:'Child',sessionType:'Individual',trainingMode:$('mode').value,chapters,overallTime:overall,questionLogs:JSON.stringify(logs)});
    const r=await fetch(API_URL,{method:'POST',body:payload}),d=await r.json();
    $('saveStatus').textContent=d.success?`Result saved. Attempt ID: ${d.attemptId}`:`Result could not be saved: ${d.error||'Unknown error'}`;
    $('saveStatus').classList.toggle('error',!d.success);

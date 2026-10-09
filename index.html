@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Oxford Academics PBE 2026/27</title>
+<title>Oxford Academics Bible Experience 2026/27</title>
 
 <style>
 :root{--navy:#0b1f3a;--navy2:#132d4f;--gold:#c9a34e;--ivory:#f8f5ec;--green:#3f7258;--red:#9f3a3a;--ink:#172033;--muted:#687386;--line:#dfe4ea;--white:#fff;--shadow:0 14px 40px rgba(11,31,58,.12)}
@@ -157,13 +157,15 @@ header{padding:18px 14px 40px}
 .quiz-nav .btn{min-width:0;flex:1}
 .footer-logo{height:38px}
 }
+.club-emblem{display:grid;place-items:center;width:64px;height:64px;border-radius:14px;background:var(--gold);color:var(--navy);font-weight:900;font-size:1.2rem}
+@media(max-width:680px){.club-emblem{width:44px;height:44px;font-size:.9rem}}
 </style>
 </head>
 
 <body>
 
 <header>
-<div class="brand" aria-label="Oxford Academics Pathfinder Bible Experience">
+<div class="brand" aria-label="Oxford Academics Bible Experience">
 
 <div class="brand-side">
 <img class="brand-logo pbe"
@@ -173,14 +175,12 @@ alt="Pathfinder Bible Experience">
 
 <div class="brand-copy">
 <h1>Oxford Academics</h1>
-<p class="brand-subtitle">Pathfinder Bible Experience</p>
+<p class="brand-subtitle">Pathfinders &amp; Adventurers · Bible Experience</p>
 <span class="brand-year">2026/27 Training</span>
 </div>
 
 <div class="brand-side">
-<img class="brand-logo"
-src="oxford_pbe_assets/pathfinder-logo.png"
-alt="Pathfinder Club">
+<img class="brand-logo" id="clubEmblem" src="oxford_pbe_assets/pathfinder-logo.png" alt="Pathfinder Club">
 </div>
 
 </div>
@@ -194,10 +194,15 @@ alt="Pathfinder Club">
 <h2 class="section-title">Prepare with purpose.</h2>
 
 <p class="sub" id="configSub">
-Choose a Pathfinder, training mode and study area. Your results are recorded for progress tracking.
+Choose a participant, training mode and study area. Your results are recorded for progress tracking.
 </p>
 
 <div class="grid">
+<div class="field full">
+<label for="club">Club</label>
+<select id="club"><option value="Pathfinders">Pathfinders</option><option value="Adventurers">Adventurers</option></select>
+<div class="hint">Choose your club before selecting a participant or coaching session.</div>
+</div>
 
 <div class="field">
 <label for="userName">User / session profile</label>
@@ -212,7 +217,7 @@ Choose a Pathfinder, training mode and study area. Your results are recorded for
 <option value="assigned">Assigned Chapters</option>
 <option value="practice">Free Practice</option>
 <option value="chapterTest">Chapter Test</option>
-<option value="simulation">PBE Simulation</option>
+<option value="simulation">Bible Experience Simulation</option>
 <option value="coaching">Coaching Session</option>
 </select>
 </div>
@@ -275,7 +280,7 @@ Tick one or more books, then choose the chapters you want to practise.
 </div>
 
 <div id="status" class="status">
-Connecting to the PBE question bank…
+Connecting to the Bible Experience question bank…
 </div>
 
 </section>
@@ -308,7 +313,7 @@ Connecting to the PBE question bank…
 <div id="progress" class="hint"></div>
 
 <div id="assignedPlayer" class="assigned-player hidden">
-<span>Assigned Pathfinder</span>
+<span>Assigned participant</span>
 <strong id="assignedPlayerName"></strong>
 </div>
 
@@ -425,10 +430,10 @@ Practice Missed Questions
 src="oxford_pbe_assets/sda-blue.png"
 alt="Seventh-day Adventist Church">
 
-<strong>Oxford Academics Pathfinder Club</strong>
+<strong>Oxford Academics Pathfinders &amp; Adventurers</strong>
 
 <span>
-Pathfinder Bible Experience · 2026/27
+Bible Experience · 2026/27
 </span>
 
 </div>
@@ -439,7 +444,7 @@ Pathfinder Bible Experience · 2026/27
 const API_URL="https://script.google.com/macros/s/AKfycbz4iSzmWqQ_jvb6R2-DZSVO5Lk37tbG0xcRTZqw_kNNBo_-ELTlECGNuaM9XTVdbnUIDQ/exec";
 
 
-const PLAYERS=[
+const PATHFINDERS=[
 
 {name:"Kudzie",group:"Main Team",assignments:{"Mark":[1,2,3]}},
 
@@ -483,6 +488,29 @@ assignments:{}}
 
 ];
 
+
+const ADVENTURERS = [
+...['Muku','Noah'].map(name=>({name,group:'Main Team',assignments:{Mark:[1,2,3]}})),
+...['Jemimah','Jael'].map(name=>({name,group:'Main Team',assignments:{Mark:[4,5]}})),
+...['Ivri','Micah'].map(name=>({name,group:'Main Team',assignments:{Mark:[6,7]}})),
+...['Joshua','Ezekiel'].map(name=>({name,group:'Main Team',assignments:{Mark:[8,9,10]}})),
+...['Danniela','Jude'].map(name=>({name,group:'Main Team',assignments:{Mark:[11,12,13]}})),
+...['Munashe','Bella'].map(name=>({name,group:'Main Team',assignments:{Mark:[14,15,16]}})),
+{name:'Coach / Group Session',group:'Coaching',role:'Coach',assignments:{}}
+];
+let PLAYERS = PATHFINDERS;
+function activeClub(){ return $('club').value; }
+function ownersForQuestion(q){
+ return PLAYERS.filter(p=>p.group==='Main Team' &&
+ (p.assignments?.[q.book]||[]).map(Number).includes(Number(q.chapter)));
+}
+function shuffle(items){
+ for(let i=items.length-1;i>0;i--){
+ const j=Math.floor(Math.random()*(i+1));
+ [items[i],items[j]]=[items[j],items[i]];
+ }
+ return items;
+}
 
 let bankInfo={},
 quizQuestions=[],
@@ -548,14 +576,8 @@ p=>(p.assignments?.[book]||[])
 
 
 function ownerForQuestion(q){
-
-return primaryOwner(
-q.book,
-q.chapter
-);
-
+ return q.assignedPlayer || primaryOwner(q.book,q.chapter);
 }
-
 
 function setStatus(msg,error=false){
 
@@ -572,6 +594,7 @@ error
 function loadPlayers(){
 
 const s=$('userName');
+s.innerHTML='<option value="" >Select a user…</option>';
 
 [
 'Main Team',
@@ -743,6 +766,7 @@ grid.innerHTML='';
 
 
 Object.keys(bankInfo).forEach(book=>{
+if(activeClub()==='Adventurers' && book!=='Mark') return;
 
 if(
 assignedMode
@@ -946,6 +970,8 @@ assignedMode
 
 
 function applyMode(){
+$('clubEmblem').src=activeClub()==='Adventurers'?'data:image/png;base64,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':'oxford_pbe_assets/pathfinder-logo.png';
+$('clubEmblem').alt=activeClub()==='Adventurers'?'Adventurer Club':'Pathfinder Club';
 
 const p=player();
 
@@ -954,7 +980,7 @@ if(p?.role==='Coach'){
 $('mode').value='coaching';
 
 $('configSub').textContent=
-'Lead a group coaching session. Select any combination of books and chapters; coaching questions will be shared as evenly as possible between the Pathfinders represented.';
+'Lead a group coaching session. Select any combination of books and chapters; coaching questions will be shared as evenly as possible between the individual participants represented.';
 
 $('startBtn').textContent=
 'Start Coaching Session';
@@ -968,7 +994,7 @@ $('mode').value==='coaching'
 $('mode').value='practice';
 
 $('configSub').textContent=
-'Choose a Pathfinder, training mode and study area. Your results are recorded for progress tracking.';
+'Choose a participant, training mode and study area. Your results are recorded for progress tracking.';
 
 $('startBtn').textContent=
 'Start Training';
@@ -1208,23 +1234,10 @@ const pools={};
 
 uniqueQuestions.forEach(q=>{
 
-const owner=
-ownerForQuestion(q);
-
-
-if(
-owner==='Unassigned'
-)
-return;
-
-
-if(
-!pools[owner]
-)
-pools[owner]=[];
-
-
-pools[owner].push(q);
+ownersForQuestion(q).forEach(p=>{
+if(!pools[p.name]) pools[p.name]=[];
+pools[p.name].push({...q,assignedPlayer:p.name});
+});
 
 });
 
@@ -1237,7 +1250,7 @@ if(
 !playerNames.length
 )
 throw new Error(
-'None of the selected chapters belong to a Main Team Pathfinder.'
+'None of the selected chapters belong to a main team participant.'
 );
 
 
@@ -1248,10 +1261,7 @@ Shuffle every player's pool.
 playerNames.forEach(
 playerName=>{
 
-pools[playerName]
-.sort(
-()=>Math.random()-.5
-);
+shuffle(pools[playerName]);
 
 });
 
@@ -1389,9 +1399,7 @@ This prevents all of one Pathfinder's
 questions appearing together.
 */
 
-questions.sort(
-()=>Math.random()-.5
-);
+shuffle(questions);
 
 
 if(
@@ -1407,6 +1415,11 @@ If the question bank cannot supply the
 full number requested, inform the coach.
 */
 
+if(questions.length){
+const counts=Object.values(allocations).map(a=>a.length);
+if(Math.max(...counts)-Math.min(...counts)>1)
+alert('Some participants have fewer available questions for the selected chapters or filters. The remaining questions have been shared among participants with questions available.');
+}
 if(
 questions.length<n
 ){
@@ -1444,7 +1457,7 @@ console.table(
 playerNames.map(
 playerName=>({
 
-Pathfinder:
+Participant:
 playerName,
 
 Questions:
@@ -1929,6 +1942,8 @@ Date.now();
 
 questionLogs[currentIdx]={
 
+club:activeClub(),
+
 questionId:
 q.questionId,
 
@@ -2129,10 +2144,7 @@ x=>
 lastMissed=
 quizQuestions.filter(q=>{
 
-const l=
-questionLogs.find(
-x=>x.questionId===q.questionId
-);
+const l=questionLogs[quizQuestions.indexOf(q)];
 
 return l
 &&l.marksAwarded<l.maxMarks;
@@ -2346,6 +2358,8 @@ x.response||''
 const payload=
 new URLSearchParams({
 
+club:activeClub(),
+
 action:
 'logQuiz',
 
@@ -2424,6 +2438,8 @@ else{
 
 const payload=
 new URLSearchParams({
+
+club:activeClub(),
 
 action:
 'logQuiz',
@@ -2567,6 +2583,12 @@ showQuestion();
 );
 
 
+$('club').addEventListener('change',()=>{
+PLAYERS=activeClub()==='Adventurers'?ADVENTURERS:PATHFINDERS;
+lastMissed=[];
+loadPlayers();
+applyMode();
+});
 init();
 
 </script>

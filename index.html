@@ -2409,26 +2409,50 @@ saves
 );
 
 
+// v8 group-session integration: preserve the existing individual saves.
+// Only submit the group record when every participant result was saved.
+const allPlayerSavesSucceeded = results.length > 0 && results.every(x => x.success);
+let groupSaveResult = null;
+let groupSaveError = '';
+if (allPlayerSavesSucceeded) {
+  try {
+    const groupPayload = new URLSearchParams({
+      action: 'logGroupSession',
+      club: activeClub(),
+      sessionId: 'GS-' + (crypto.randomUUID ? crypto.randomUUID() :
+        Date.now() + '-' + Math.random().toString(36).slice(2)),
+      sessionType: 'Coaching',
+      participants: Object.keys(grouped).filter(name => name !== 'Unassigned').join(', '),
+      groupMarks: String(earned),
+      groupMaximum: String(max),
+      booksChapters: chapters,
+      status: 'Completed',
+      questions: String(logs.length)
+    });
+    const groupResponse = await fetch(API_URL, {method:'POST', body:groupPayload});
+    groupSaveResult = await groupResponse.json();
+    if (!groupResponse.ok || !groupSaveResult.success) {
+      throw new Error(groupSaveResult.error || 'Backend did not confirm group save');
+    }
+  } catch (e) {
+    groupSaveError = e.message;
+  }
+}
+
+
 const ok=
 results.filter(
 x=>x.success
 ).length;
 
 
-$('saveStatus')
-.textContent=
-ok===results.length
+$('saveStatus').textContent = !allPlayerSavesSucceeded
+  ? `Saved ${ok} of ${results.length} player coaching results. Group record not submitted.`
+  : groupSaveError
+    ? `All ${ok} player results saved, but group record failed: ${groupSaveError}`
+    : `Coaching results saved against ${ok} players. Group session recorded.`;
 
-?`Coaching results saved against ${ok} player${ok===1?'':'s'}.`
-
-:`Saved ${ok} of ${results.length} player coaching results.`;
-
-
-$('saveStatus')
-.classList.toggle(
-'error',
-ok!==results.length
-);
+$('saveStatus').classList.toggle('error', !allPlayerSavesSucceeded || !!groupSaveError);
 
 }
 

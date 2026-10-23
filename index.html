@@ -223,6 +223,12 @@ Choose a participant, training mode and study area. Your results are recorded fo
 </div>
 
 <div class="field full">
+<label for="questionBank">Question bank</label>
+<select id="questionBank"><option value="OA">Oxford Academics</option><option value="PA">PBE Academy</option></select>
+<div class="hint">Each session uses one bank only. Commentary is assigned by book, not chapter.</div>
+</div>
+
+<div class="field full">
 
 <label>Books & chapters</label>
 
@@ -444,6 +450,7 @@ Bible Experience · 2026/27
 const API_URL="https://script.google.com/macros/s/AKfycbz4iSzmWqQ_jvb6R2-DZSVO5Lk37tbG0xcRTZqw_kNNBo_-ELTlECGNuaM9XTVdbnUIDQ/exec";
 
 
+const COMMENTARY_KEY="Commentary";
 const PATHFINDERS=[
 
 {name:"Kudzie",group:"Main Team",assignments:{"Mark":[1,2,3]}},
@@ -502,7 +509,9 @@ let PLAYERS = PATHFINDERS;
 function activeClub(){ return $('club').value; }
 function ownersForQuestion(q){
  return PLAYERS.filter(p=>p.group==='Main Team' &&
- (p.assignments?.[q.book]||[]).map(Number).includes(Number(q.chapter)));
+ (q.isCommentary || q.chapter==="Commentary" || q.chapter==="" || q.chapter==null
+ ? Object.prototype.hasOwnProperty.call(p.assignments||{},q.book)
+ : (p.assignments?.[q.book]||[]).map(Number).includes(Number(q.chapter))));
 }
 function shuffle(items){
  for(let i=items.length-1;i>0;i--){
@@ -526,6 +535,7 @@ pendingScore=null;
 
 
 const $=id=>document.getElementById(id);
+const selectedBank=()=>$("questionBank").value;
 
 
 function escapeHTML(v){
@@ -576,7 +586,7 @@ p=>(p.assignments?.[book]||[])
 
 
 function ownerForQuestion(q){
- return q.assignedPlayer || primaryOwner(q.book,q.chapter);
+ return q.assignedPlayer || (q.isCommentary ? "Book commentary" : primaryOwner(q.book,q.chapter));
 }
 
 function setStatus(msg,error=false){
@@ -633,7 +643,7 @@ loadPlayers();
 try{
 
 const r=await fetch(
-`${API_URL}?action=bankinfo&t=${Date.now()}`
+`${API_URL}?action=bankinfo&bank=${selectedBank()}&t=${Date.now()}`
 );
 
 const d=await r.json();
@@ -775,12 +785,13 @@ assignedMode
 return;
 
 
-const chapters=
-Object.keys(
-bankInfo[book]||{}
-)
-.sort(
-(a,b)=>Number(a)-Number(b)
+const chapters=Object.keys(bankInfo[book]||{})
+.filter(c=>c!==COMMENTARY_KEY && c!=="0" && c!=="")
+.sort((a,b)=>Number(a)-Number(b));
+const hasCommentary=selectedBank()==="PA" && (
+  Object.prototype.hasOwnProperty.call(bankInfo[book]||{},COMMENTARY_KEY) ||
+  Object.prototype.hasOwnProperty.call(bankInfo[book]||{},"0") ||
+  Object.prototype.hasOwnProperty.call(bankInfo[book]||{},"")
 );
 
 
@@ -836,7 +847,7 @@ card.querySelector(
 );
 
 
-chapters.forEach(c=>{
+(hasCommentary?[...chapters,COMMENTARY_KEY]:chapters).forEach(c=>{
 
 const label=
 document.createElement('label');
@@ -859,7 +870,7 @@ label.querySelector('input');
 
 if(assignedMode)
 cb.checked=
-assigned.includes(String(c));
+assigned.includes(String(c)) || (c===COMMENTARY_KEY && Object.prototype.hasOwnProperty.call(p?.assignments||{},book));
 
 cb.addEventListener(
 'change',
@@ -961,7 +972,7 @@ assignedMode
 
 $('studyHint').textContent=
 assignedMode
-?'Your assigned books and chapters are selected automatically.'
+?'Your assigned chapters and book-level commentary (where available) are selected automatically.'
 :(isCoach()
 ?'Select any combination of books and chapters for this coaching session.'
 :'Select any combination of books and chapters for free practice.');
@@ -1005,6 +1016,12 @@ renderStudySelector();
 
 }
 
+
+$('questionBank').addEventListener('change',async()=>{
+  bankInfo={};
+  $('bookGrid').innerHTML='<div class="hint">Loading selected question bank…</div>';
+  await init();
+});
 
 $('userName')
 .addEventListener(
@@ -1131,6 +1148,7 @@ n:Math.max(
 n,
 100
 ),
+bank:selectedBank(),
 
 t:Date.now()
 
@@ -1496,7 +1514,7 @@ chapters:
 chapters.join(','),
 
 n,
-
+bank:selectedBank(),
 t:Date.now()
 
 });
@@ -1644,7 +1662,9 @@ pendingScore=null;
 
 
 $('ref').textContent=
-`${q.book} ${q.chapter}:${q.verse}`;
+q.isCommentary || q.chapter===COMMENTARY_KEY || q.chapter==="" || q.chapter==null
+ ? `${q.book} — Commentary`
+ : `${q.book} ${q.chapter}:${q.verse}`;
 
 
 $('qtext').textContent=
@@ -1946,6 +1966,7 @@ club:activeClub(),
 
 questionId:
 q.questionId,
+questionBank:selectedBank(),
 
 book:
 q.book,
@@ -2362,6 +2383,7 @@ club:activeClub(),
 
 action:
 'logQuiz',
+questionBank:selectedBank(),
 
 name,
 
@@ -2373,6 +2395,7 @@ sessionType:
 
 trainingMode:
 'coaching',
+questionBank:selectedBank(),
 
 chapters:
 playerChapters,
@@ -2467,6 +2490,7 @@ club:activeClub(),
 
 action:
 'logQuiz',
+questionBank:selectedBank(),
 
 name:
 $('userName').value,
@@ -2479,6 +2503,7 @@ sessionType:
 
 trainingMode:
 $('mode').value,
+questionBank:selectedBank(),
 
 chapters,
 

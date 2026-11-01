@@ -197,30 +197,55 @@ alt="Pathfinder Bible Experience">
 Choose a participant, training mode and study area. Your results are recorded for progress tracking.
 </p>
 
+
 <div class="grid">
-<div class="field full">
-<label for="club">Club</label>
-<select id="club"><option value="Pathfinders">Pathfinders</option><option value="Adventurers">Adventurers</option></select>
-<div class="hint">Choose your club before selecting a participant or coaching session.</div>
-</div>
 
-<div class="field">
-<label for="userName">User / session profile</label>
-<select id="userName">
-<option value="">Select a user…</option>
-</select>
-</div>
+  <!-- 1. CLUB -->
+  <div class="field full">
+    <label for="club">Club</label>
+    <select id="club">
+      <option value="Pathfinders">Pathfinders</option>
+      <option value="Adventurers">Adventurers</option>
+    </select>
+    <div class="hint">
+      Choose your club before selecting a question bank,
+      participant or coaching session.
+    </div>
+  </div>
 
-<div class="field">
-<label for="mode">Training mode</label>
-<select id="mode">
-<option value="assigned">Assigned Chapters</option>
-<option value="practice">Free Practice</option>
-<option value="chapterTest">Chapter Test</option>
-<option value="simulation">Bible Experience Simulation</option>
-<option value="coaching">Coaching Session</option>
-</select>
-</div>
+  <!-- 2. QUESTION BANK -->
+  <div class="field full">
+    <label for="questionBank">Question bank</label>
+    <select id="questionBank">
+      <option value="PA">PBE Academy</option>
+      <option value="RA">ReadyAnswers</option>
+      <option value="OA">Oxford Academics</option>
+    </select>
+    <div class="hint">
+      Each session uses one bank only.
+      Commentary is assigned by book, not chapter.
+    </div>
+  </div>
+
+  <!-- 3. USER / SESSION PROFILE -->
+  <div class="field">
+    <label for="userName">User / session profile</label>
+    <select id="userName">
+      <option value="">Select a user…</option>
+    </select>
+  </div>
+
+  <!-- 4. TRAINING MODE -->
+  <div class="field">
+    <label for="mode">Training mode</label>
+    <select id="mode">
+      <option value="assigned">Assigned Chapters</option>
+      <option value="practice">Free Practice</option>
+      <option value="chapterTest">Chapter Test</option>
+      <option value="simulation">Bible Experience Simulation</option>
+      <option value="coaching">Coaching Session</option>
+    </select>
+  </div>
 
 <div class="field full">
   <label for="questionBank">Question bank</label>

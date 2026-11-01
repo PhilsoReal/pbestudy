@@ -160,8 +160,19 @@ header{padding:18px 14px 40px}
 .club-emblem{display:grid;place-items:center;width:64px;height:64px;border-radius:14px;background:var(--gold);color:var(--navy);font-weight:900;font-size:1.2rem}
 @media(max-width:680px){.club-emblem{width:44px;height:44px;font-size:.9rem}}
 
-/* Dashboard tab integration */
-.pbe-tabs{display:flex;gap:10px;max-width:1100px;margin:18px auto 0;padding:0 16px}.pbe-tabs button{border:1px solid #c9a34e;border-radius:12px;padding:12px 23px;font-weight:750;background:white;color:#0b1f3a;cursor:pointer}.pbe-tabs button[aria-selected="true"]{background:#0b1f3a;color:#fff}.pbe-dashboard-shell{max-width:1200px;margin:16px auto 35px;padding:0 16px}.pbe-dashboard-frame{width:100%;min-height:900px;border:1px solid #dfe4ea;border-radius:16px;background:white}.pbe-dashboard-note{color:#687386;margin:0 0 12px}
+/* Integrated navigation — aligned with the training card */
+.pbe-tabs{display:flex;align-items:center;gap:8px;max-width:980px;margin:20px auto 0;padding:0 16px;position:relative;z-index:2}
+.pbe-tabs button{appearance:none;min-width:116px;border:1px solid #d6dce5;border-radius:11px;padding:11px 20px;font:700 14px/1.2 inherit;font-family:inherit;background:#fff;color:#0b1f3a;cursor:pointer;transition:background .15s,border-color .15s}
+.pbe-tabs button:hover{border-color:#c9a34e;background:#faf7ee}
+.pbe-tabs button[aria-selected="true"]{background:#0b1f3a;color:#fff;border-color:#0b1f3a;box-shadow:inset 0 -2px 0 #c9a34e}
+.pbe-tabs+ #trainingPanel .shell{margin-top:14px}
+.pbe-dashboard-shell{max-width:980px;margin:14px auto 40px;padding:0 16px}
+.pbe-dashboard-frame{display:block;width:100%;height:950px;border:1px solid #dfe4ea;border-radius:16px;background:white}
+.pbe-dashboard-note{color:#687386;margin:0 0 12px}
+.pbe-dashboard-help{background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:14px 18px;margin-bottom:12px;color:#172033}
+.pbe-dashboard-help a{color:#0b416e;font-weight:700}
+#trainingPanel[hidden],#dashboardPanel[hidden]{display:none!important}
+@media(max-width:680px){.pbe-tabs{margin-top:12px}.pbe-tabs button{flex:1;min-width:0}.pbe-dashboard-frame{height:820px}}
 </style>
 </head>
 
@@ -466,7 +477,7 @@ Practice Missed Questions
 
 </main>
 </div>
-<section id="dashboardPanel" class="pbe-dashboard-shell" hidden aria-label="Coaches dashboard"><p class="pbe-dashboard-note">Coach-only statistics. Enter your dashboard password to view player results.</p><iframe id="coachDashboardFrame" class="pbe-dashboard-frame" title="Oxford Academics Coaches Dashboard" loading="lazy" referrerpolicy="no-referrer"></iframe></section>
+<section id="dashboardPanel" class="pbe-dashboard-shell" hidden aria-label="Coaches dashboard"><p class="pbe-dashboard-note">Coach-only statistics. Enter your dashboard password to view player results.</p><div class="pbe-dashboard-help" id="dashboardHelp"><strong>Dashboard not appearing?</strong> Open the <a id="dashboardDirectLink" href="#" target="_blank" rel="noopener noreferrer">secure dashboard in a new tab</a> to check whether Google requires sign-in or the Apps Script deployment needs updating. The dashboard will remain available here once embedding is permitted.</div><iframe id="coachDashboardFrame" class="pbe-dashboard-frame" title="Oxford Academics Coaches Dashboard" loading="lazy" referrerpolicy="no-referrer"></iframe></section>
 
 
 
@@ -2683,6 +2694,7 @@ init();
 
 // Dashboard is embedded from Apps Script so all private analytics remain server-side.
 const DASHBOARD_URL=API_URL+'?action=coachdashboard';
+document.getElementById('dashboardDirectLink').href=DASHBOARD_URL;
 function switchPbeTab(which){
   const dashboard=which==='dashboard';
   document.getElementById('trainingPanel').hidden=dashboard;

@@ -159,6 +159,9 @@ header{padding:18px 14px 40px}
 }
 .club-emblem{display:grid;place-items:center;width:64px;height:64px;border-radius:14px;background:var(--gold);color:var(--navy);font-weight:900;font-size:1.2rem}
 @media(max-width:680px){.club-emblem{width:44px;height:44px;font-size:.9rem}}
+
+/* Dashboard tab integration */
+.pbe-tabs{display:flex;gap:10px;max-width:1100px;margin:18px auto 0;padding:0 16px}.pbe-tabs button{border:1px solid #c9a34e;border-radius:12px;padding:12px 23px;font-weight:750;background:white;color:#0b1f3a;cursor:pointer}.pbe-tabs button[aria-selected="true"]{background:#0b1f3a;color:#fff}.pbe-dashboard-shell{max-width:1200px;margin:16px auto 35px;padding:0 16px}.pbe-dashboard-frame{width:100%;min-height:900px;border:1px solid #dfe4ea;border-radius:16px;background:white}.pbe-dashboard-note{color:#687386;margin:0 0 12px}
 </style>
 </head>
 
@@ -186,6 +189,9 @@ alt="Pathfinder Bible Experience">
 </div>
 </header>
 
+
+<nav class="pbe-tabs" aria-label="Main sections"><button id="trainingTab" type="button" aria-selected="true" aria-controls="trainingPanel">Training</button><button id="dashboardTab" type="button" aria-selected="false" aria-controls="dashboardPanel">Dashboard</button></nav>
+<div id="trainingPanel">
 <main class="shell">
 
 <section id="config" class="card">
@@ -459,6 +465,9 @@ Practice Missed Questions
 </section>
 
 </main>
+</div>
+<section id="dashboardPanel" class="pbe-dashboard-shell" hidden aria-label="Coaches dashboard"><p class="pbe-dashboard-note">Coach-only statistics. Enter your dashboard password to view player results.</p><iframe id="coachDashboardFrame" class="pbe-dashboard-frame" title="Oxford Academics Coaches Dashboard" loading="lazy" referrerpolicy="no-referrer"></iframe></section>
+
 
 
 <div class="footer">
@@ -2671,6 +2680,19 @@ applyMode();
 });
 init();
 
+
+// Dashboard is embedded from Apps Script so all private analytics remain server-side.
+const DASHBOARD_URL=API_URL+'?action=coachdashboard';
+function switchPbeTab(which){
+  const dashboard=which==='dashboard';
+  document.getElementById('trainingPanel').hidden=dashboard;
+  document.getElementById('dashboardPanel').hidden=!dashboard;
+  document.getElementById('trainingTab').setAttribute('aria-selected',String(!dashboard));
+  document.getElementById('dashboardTab').setAttribute('aria-selected',String(dashboard));
+  if(dashboard){const f=document.getElementById('coachDashboardFrame');if(!f.getAttribute('src'))f.src=DASHBOARD_URL;}
+}
+document.getElementById('trainingTab').addEventListener('click',()=>switchPbeTab('training'));
+document.getElementById('dashboardTab').addEventListener('click',()=>switchPbeTab('dashboard'));
 </script>
 
 </body>
